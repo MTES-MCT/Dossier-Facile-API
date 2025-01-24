@@ -56,11 +56,9 @@
         </encoder>
     </appender>
 
-    <appender name="CUSTOM" class="fr.dossierfacile.api.front.log.CustomAppender"/>
 
     <root level="${LOG_LEVEL}">
         <appender-ref ref="LOGSTASH"/>
-        <appender-ref ref="CUSTOM"/>
         <appender-ref ref="STDOUT"/>
         <springProfile name="dev">
             <appender-ref ref="FILE"/>
