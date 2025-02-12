@@ -2,6 +2,7 @@ package fr.gouv.bo.service;
 
 import fr.dossierfacile.common.entity.Owner;
 import fr.gouv.bo.repository.OwnerRepository;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -16,12 +17,8 @@ import java.util.Optional;
 public class OwnerService {
     private final OwnerRepository ownerRepository;
 
-    public Page<Owner> findAllPageable(PageRequest page) {
-        return ownerRepository.findAll(page);
-    }
-
-    public Page<Owner> findAllByEmailExpressionPageable(String email, PageRequest page) {
-        return ownerRepository.findAllByEmailContaining(email, page);
+    public Page<Owner> searchOwners(@NotNull String email, @NotNull String firstName, @NotNull String lastName, PageRequest page) {
+        return ownerRepository.searchOwners(email.toLowerCase(), firstName.toLowerCase(), lastName.toLowerCase(), page);
     }
 
     public Optional<Owner> findById(Long id) {

@@ -5,7 +5,6 @@ import fr.dossierfacile.common.entity.Owner;
 import fr.gouv.bo.mapper.OwnerMapper;
 import fr.gouv.bo.model.owner.OwnerModel;
 import fr.gouv.bo.service.OwnerService;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,8 +15,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import java.util.Optional;
 
 @Controller
 @RequestMapping(value = "/bo/owners")
@@ -34,18 +31,17 @@ public class BOOwnerController {
     public String index(Model model,
                         @RequestParam(value = "pageSize", defaultValue = INITIAL_PAGE_SIZE) int pageSize,
                         @RequestParam(value = "page", defaultValue = INITIAL_PAGE) int page,
-                        @RequestParam("ownerEmail") Optional<String> email) {
+                        @RequestParam(value = "ownerEmail", defaultValue = "") String email,
+                        @RequestParam(value = "ownerFirstname", defaultValue = "") String firstName,
+                        @RequestParam(value = "ownerLastname", defaultValue = "") String lastName) {
 
         PageRequest pageable = PageRequest.of(page - 1, pageSize, Sort.by("creationDateTime").descending());
 
-        Page<Owner> owners;
-        if (email.isPresent() && StringUtils.isNotBlank(email.get())) {
-            owners = ownerService.findAllByEmailExpressionPageable(email.get(), pageable);
-        } else {
-            owners = ownerService.findAllPageable(pageable);
-        }
+        Page<Owner> owners = ownerService.searchOwners(email, firstName, lastName, pageable);
 
-        model.addAttribute("ownerEmail", email.orElse(""));
+        model.addAttribute("ownerEmail", email);
+        model.addAttribute("ownerFirstname", firstName);
+        model.addAttribute("ownerLastname", lastName);
         model.addAttribute("owners", owners);
         model.addAttribute("pageSize", pageable.getPageSize());
         model.addAttribute("pageSizes", PAGE_SIZES);

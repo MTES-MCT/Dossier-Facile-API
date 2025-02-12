@@ -12,16 +12,24 @@
   <div class="container-lg actions-section">
     <div class="row">
       <form method="get"
-            th:action="@{/bo/owners(pageSize=${selectedPageSize}, page=1, ownerEmail=${ownerEmail})}"
+            th:action="@{/bo/owners(pageSize=${selectedPageSize}, page=1, ownerEmail=${ownerEmail},ownerFirstname=${ownerFirstname},ownerLastname=${ownerLastname})}"
             class="filter">
                 <span>
-                    <label>email: </label><input type="text" th:value="*{ownerEmail}" name="ownerEmail"/>
+                    <label for="ownerEmail">E-mail:</label>
+                    <input type="text" id="ownerEmail" th:value="*{ownerEmail}" name="ownerEmail"/>
+
+                    <label for="ownerFirstname">Prénom:</label>
+                    <input type="text" id="ownerFirstname" th:value="*{ownerFirstname}" name="ownerFirstname"/>
+
+                    <label for="ownerLastname">Nom:</label>
+                    <input type="text" id="ownerLastname" th:value="*{ownerLastname}" name="ownerLastname"/>
+
                     <button type="submit" class="btn btn-info">Filtrer</button>
                 </span>
       </form>
     </div>
-    <div class="row table-nav mt-4">
-      <div th:replace="~{bo/fragments/pagination :: pagination (items=${owners}, paramKey='ownerEmail', paramValue=${ownerEmail}, pageSizes=${pageSizes}, endpoint='/bo/owners')}"></div>
+    <div class="row table-nav mt-4" th:with="parameters=${ 'ownerEmail=' + ownerEmail + '&ownerFirstname=' + ownerFirstname + '&ownerLastname=' + ownerLastname}">
+      <div th:replace="~{bo/fragments/pagination-with-parameters :: pagination (items=${owners}, parameters=${parameters}, pageSizes=${pageSizes}, endpoint='/bo/owners')}"></div>
     </div>
   </div>
   <div class="container-lg">
@@ -54,7 +62,9 @@
       </table>
     </div>
     <div class="row table-nav">
-      <div th:replace="~{bo/fragments/pagination :: pagination (items=${owners}, paramKey='ownerEmail', paramValue=${ownerEmail}, pageSizes=${pageSizes}, endpoint='/bo/owners')}"></div>
+      <div class="row table-nav mt-4" th:with="parameters=${ 'ownerEmail=' + ownerEmail + '&ownerFirstname=' + ownerFirstname + '&ownerLastname=' + ownerLastname}">
+        <div th:replace="~{bo/fragments/pagination-with-parameters :: pagination (items=${owners}, parameters=${parameters}, pageSizes=${pageSizes}, endpoint='/bo/owners')}"></div>
+      </div>
     </div>
   </div>
 </div>

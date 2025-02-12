@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<body>
+<div th:fragment="pagination (items, parameters, pageSizes, endpoint)">
+    <div class="row table-nav">
+        <div class="mb-3 col-md-1">
+            <select class="form-select form-control pagination" onchange="location.href=safeRedirect(this.value)">
+                <option th:each="localPageSize : ${pageSizes}"
+                        th:value="${endpoint} + '?' + ${parameters} + '&pageSize=' + ${localPageSize} + '&page=1'"
+                        th:text="${localPageSize}"
+                        th:selected="${localPageSize} == ${pageSize}">
+                </option>
+            </select>
+        </div>
+        <div th:if="${items.totalPages > 1}" class="mb-3 col-md-11 pagination-centered">
+            <ul class="pagination">
+                <li th:class="${items.number == 0} ? disabled">
+                    <a class="page-link"
+                       th:href="${endpoint} + '?' + ${parameters} + '&page=1' + '&pageSize=' + ${pageSize}">&laquo;</a>
+                </li>
+                <li th:class="${items.number == 0} ? disabled">
+                    <a class="page-link"
+                       th:href="${endpoint} + '?' + ${parameters} + '&page=' + ${items.number} + '&pageSize=' + ${pageSize}">&larr;</a>
+                </li>
+                <li th:each="page : ${#numbers.sequence(1, items.totalPages)}"
+                    th:class="${items.number == (page - 1)} ? 'active pointer-disabled'">
+                    <a class="page-link"
+                       th:href="${endpoint} + '?' + ${parameters} + '&page=' + ${page} + '&pageSize=' + ${pageSize}"
+                       th:text="${page}"></a>
+                </li>
+                <li th:class="${items.number + 1 == items.totalPages} ? disabled">
+                    <a class="page-link"
+                       th:href="${endpoint} + '?' + ${parameters} + '&page=' + ${items.number + 2 } + '&pageSize=' + ${pageSize}">&rarr;</a>
+                </li>
+                <li th:class="${items.number + 1 == items.totalPages} ? disabled">
+                    <a class="page-link"
+                       th:href="${endpoint} + '?' + ${parameters} + '&page=' + ${items.totalPages} + '&pageSize=' + ${pageSize}">&raquo;</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
