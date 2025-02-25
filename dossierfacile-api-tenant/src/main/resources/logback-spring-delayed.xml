@@ -50,6 +50,7 @@
                     "profiles":"${APPLICATION_PROFILES}"}
                 </customFields>
                 <includeMdcKeyName>uri</includeMdcKeyName>
+                <includeMdcKeyName>normalized_uri</includeMdcKeyName>
                 <includeMdcKeyName>request_id</includeMdcKeyName>
                 <includeMdcKeyName>ip</includeMdcKeyName>
                 <includeMdcKeyName>client</includeMdcKeyName>

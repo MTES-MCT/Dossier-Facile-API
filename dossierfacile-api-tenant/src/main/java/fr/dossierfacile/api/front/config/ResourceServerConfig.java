@@ -3,6 +3,7 @@ package fr.dossierfacile.api.front.config;
 import fr.dossierfacile.api.front.config.filter.ConnectionContextFilter;
 import fr.dossierfacile.api.front.security.PartnerAuthorizationManager;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authorization.AuthorizationManager;
@@ -13,6 +14,7 @@ import org.springframework.security.config.annotation.web.configurers.HeadersCon
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.security.web.access.intercept.RequestAuthorizationContext;
@@ -29,7 +31,10 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
+@Slf4j
 public class ResourceServerConfig {
+
+    private final AuthenticationEntryPoint authenticationEntryPoint;
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -64,8 +69,15 @@ public class ResourceServerConfig {
                         .requestMatchers("/dfc/**").hasAuthority("SCOPE_dfc")
                         .anyRequest().hasAuthority("SCOPE_dossier")
                 )
-                .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(new JwtAuthenticationConverter())));
-
+                .oauth2ResourceServer(oauth2 ->
+                        oauth2
+                                .jwt(jwt ->
+                                        jwt.jwtAuthenticationConverter(
+                                                new JwtAuthenticationConverter()
+                                        )
+                                )
+                                .authenticationEntryPoint(authenticationEntryPoint)
+                );
         return http.build();
     }
 
