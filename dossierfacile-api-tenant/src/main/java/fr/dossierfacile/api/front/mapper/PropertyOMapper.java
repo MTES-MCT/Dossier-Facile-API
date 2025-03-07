@@ -10,6 +10,4 @@ import org.springframework.stereotype.Component;
 public abstract class PropertyOMapper {
 
     public abstract PropertyOModel toPropertyModel(Property property);
-
-
 }
