@@ -3,7 +3,6 @@ package fr.dossierfacile.common.utils;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.stream.Stream;
 
@@ -22,7 +21,10 @@ public class LoggerUtilTest {
                 Arguments.of("/products/123/edit/456", "/products/{id}/edit/{id}"), // Plusieurs IDs
                 Arguments.of("/preview/a79b75f3-bd1d-470e-9cd1-569672200d87", "/preview/{uuid}"), // UUID
                 Arguments.of("/preview/12/file/a79b75f3-bd1d-470e-9cd1-569672200d87", "/preview/{id}/file/{uuid}"), // UUID
-                Arguments.of("/preview/a79b75f3-bd1d-470e-9cd1-569672200d87/file/a79b75f3-bd1d-470e-9cd1-569672200d87", "/preview/{uuid}/file/{uuid}") // plusieurs UUID
+                Arguments.of("/preview/a79b75f3-bd1d-470e-9cd1-569672200d87/file/a79b75f3-bd1d-470e-9cd1-569672200d87", "/preview/{uuid}/file/{uuid}"), // plusieurs UUID
+                Arguments.of("/email/nicolas.sagon@gmail.com", "/email/{email}"),
+                Arguments.of("/email/nicolas.sagon@gmail.com/profile", "/email/{email}/profile"),
+                Arguments.of("/email/nicolas.sagon@gmail.com/profile/123/a79b75f3-bd1d-470e-9cd1-569672200d87", "/email/{email}/profile/{id}/{uuid}")
         );
     }
 

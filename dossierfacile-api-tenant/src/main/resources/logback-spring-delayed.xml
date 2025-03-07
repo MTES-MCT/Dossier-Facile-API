@@ -53,10 +53,17 @@
                 <includeMdcKeyName>normalized_uri</includeMdcKeyName>
                 <includeMdcKeyName>request_id</includeMdcKeyName>
                 <includeMdcKeyName>ip</includeMdcKeyName>
+                <includeMdcKeyName>elapsed_time</includeMdcKeyName>
                 <includeMdcKeyName>client</includeMdcKeyName>
                 <includeMdcKeyName>user</includeMdcKeyName>
                 <includeMdcKeyName>email</includeMdcKeyName>
                 <includeMdcKeyName>response_status</includeMdcKeyName>
+                <includeMdcKeyName>body</includeMdcKeyName>
+                <includeMdcKeyName>form_parameters</includeMdcKeyName>
+                <includeMdcKeyName>params</includeMdcKeyName>
+                <includeMdcKeyName>logs</includeMdcKeyName>
+                <includeMdcKeyName>response_content_type</includeMdcKeyName>
+                <includeMdcKeyName>response_body</includeMdcKeyName>
             </encoder>
         </appender>
     </springProfile>
