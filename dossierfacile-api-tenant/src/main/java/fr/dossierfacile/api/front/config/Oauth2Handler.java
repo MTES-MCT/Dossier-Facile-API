@@ -1,4 +1,4 @@
-package fr.dossierfacile.common.config;
+package fr.dossierfacile.api.front.config;
 
 import ch.qos.logback.classic.Level;
 import fr.dossierfacile.common.utils.LoggerUtil;
@@ -17,7 +17,7 @@ public class Oauth2Handler {
     @Bean
     public AuthenticationEntryPoint authenticationEntryPoint() {
         return (request, response, authException) -> {
-            LoggerUtil.prepareMDC(request, Collections.emptyMap());
+            LoggerUtil.prepareMDCForHttpRequest(request, Collections.emptyMap());
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             LoggerUtil.addRequestStatusToMdc(HttpServletResponse.SC_UNAUTHORIZED);
 

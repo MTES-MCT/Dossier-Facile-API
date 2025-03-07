@@ -1,10 +1,12 @@
 package fr.dossierfacile.common.log;
 
 import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.IThrowableProxy;
 import ch.qos.logback.classic.spi.StackTraceElementProxy;
 import ch.qos.logback.core.AppenderBase;
+import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 import java.util.ArrayList;
@@ -14,12 +16,17 @@ import java.util.concurrent.ConcurrentMap;
 
 public class CustomAppender extends AppenderBase<ILoggingEvent> {
 
-    private final ConcurrentMap<String, List<LogModel>> logsByRequestId = new ConcurrentHashMap<>();
+    private final String uniqueIdentifier;
+    private final ConcurrentMap<String, List<LogModel>> logsByIdentifier = new ConcurrentHashMap<>();
+
+    public CustomAppender(String uniqueIdentifier) {
+        this.uniqueIdentifier = uniqueIdentifier;
+    }
 
     @Override
     protected void append(ILoggingEvent eventObject) {
-        String requestId = MDC.get("request_id");
-        if (requestId != null) {
+        String identifier = MDC.get(uniqueIdentifier);
+        if (identifier != null) {
             String message = eventObject.getFormattedMessage();
             String loggedStackTrace = null;
             if (eventObject.getLevel().isGreaterOrEqual(Level.ERROR)) {
@@ -35,16 +42,24 @@ public class CustomAppender extends AppenderBase<ILoggingEvent> {
             }
 
             LogModel log = new LogModel(eventObject.getLevel(), message, loggedStackTrace);
-            logsByRequestId.computeIfAbsent(requestId, id -> new ArrayList<>())
+            logsByIdentifier.computeIfAbsent(identifier, id -> new ArrayList<>())
                     .add(log);
         }
     }
 
-    public List<LogModel> getLogsForRequestId(String requestId) {
-        return logsByRequestId.getOrDefault(requestId, List.of());
+    public List<LogModel> getLogsForRequestId(String uniqueIdentifier) {
+        return logsByIdentifier.getOrDefault(uniqueIdentifier, List.of());
     }
 
-    public void clearLogsForRequest(String requestId) {
-        logsByRequestId.remove(requestId);
+    public void clearLogsForRequest(String uniqueIdentifier) {
+        logsByIdentifier.remove(uniqueIdentifier);
+    }
+
+    public static CustomAppender initCustomAppender(String uniqueIdentifier) {
+        LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
+        var customLogger = new CustomAppender(uniqueIdentifier);
+        customLogger.setContext(lc);
+        customLogger.start();
+        return customLogger;
     }
 }

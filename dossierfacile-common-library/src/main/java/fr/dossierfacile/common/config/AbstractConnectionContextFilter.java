@@ -7,11 +7,9 @@ import jakarta.servlet.http.HttpFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.MDC;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.UUID;
 
 @Slf4j
 public abstract class AbstractConnectionContextFilter extends HttpFilter {
@@ -28,7 +26,7 @@ public abstract class AbstractConnectionContextFilter extends HttpFilter {
         }
 
         try {
-            LoggerUtil.prepareMDC(request, getAdditionalContextElements());
+            LoggerUtil.prepareMDCForHttpRequest(request, getAdditionalContextElements());
             String requestUri = request.getRequestURI();
             if ("/error".equals(requestUri) && request.getAttribute(JAKARTA_SERVLET_FORWARD_REQUEST_URI) != null) {
                 String previousRequestUri = request.getAttribute(JAKARTA_SERVLET_FORWARD_REQUEST_URI).toString();
