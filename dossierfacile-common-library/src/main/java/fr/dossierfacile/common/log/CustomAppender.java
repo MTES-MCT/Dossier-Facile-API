@@ -47,7 +47,7 @@ public class CustomAppender extends AppenderBase<ILoggingEvent> {
         }
     }
 
-    public List<LogModel> getLogsForRequestId(String uniqueIdentifier) {
+    public List<LogModel> getLogsForUniqueIdentifier(String uniqueIdentifier) {
         return logsByIdentifier.getOrDefault(uniqueIdentifier, List.of());
     }
 

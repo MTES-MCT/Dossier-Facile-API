@@ -53,7 +53,7 @@
                 <includeMdcKeyName>normalized_uri</includeMdcKeyName>
                 <includeMdcKeyName>request_id</includeMdcKeyName>
                 <includeMdcKeyName>ip</includeMdcKeyName>
-                <includeMdcKeyName>elapsed_time</includeMdcKeyName>
+                <includeMdcKeyName>execution_time</includeMdcKeyName>
                 <includeMdcKeyName>client</includeMdcKeyName>
                 <includeMdcKeyName>user</includeMdcKeyName>
                 <includeMdcKeyName>email</includeMdcKeyName>

@@ -2,8 +2,8 @@ package fr.dossierfacile.process.file.amqp;
 
 import fr.dossierfacile.common.entity.messaging.QueueName;
 import fr.dossierfacile.common.service.interfaces.QueueMessageService;
+import fr.dossierfacile.process.file.log.LogAggregator;
 import fr.dossierfacile.process.file.service.interfaces.MinifyFileService;
-import fr.dossierfacile.process.file.util.MemoryUtils;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +22,7 @@ public class MinifyFileReceiver {
     private final MinifyFileService minifyFileService;
     private final QueueMessageService queueMessageService;
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+    private final LogAggregator logAggregator;
 
     @Value("${file.minify.timeout.ms}")
     private Long fileMinifyTimeout;
@@ -37,9 +38,12 @@ public class MinifyFileReceiver {
                     0,
                     fileMinifyTimeout,
                     (message) -> {
-                        LoggingContext.startProcessing(message.getFileId(), ActionType.MINIFY);
+                        log.info("Received {} to process : {}", ActionType.MINIFY.name(), message.getFileId());
                         minifyFileService.process(message.getFileId());
-                        LoggingContext.endProcessing();
+                    },
+                    (jobContext) -> {
+                        log.info("Ending processing");
+                        logAggregator.sendWorkerLogs(jobContext, ActionType.MINIFY);
                     });
         } catch (Exception e) {
             log.error("Unable to consume the message queue");

@@ -2,7 +2,6 @@ package fr.dossierfacile.api.front.log;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.LoggerContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.dossierfacile.common.log.CustomAppender;
 import fr.dossierfacile.common.log.LogModel;
@@ -61,7 +60,7 @@ public class LogAggregationFilter extends OncePerRequestFilter {
             filterChain.doFilter(requestWrapped, responseWrapped);
         } finally {
             LoggerUtil.addRequestStatusToMdc(response.getStatus());
-            List<LogModel> logs = customAppender.getLogsForRequestId(requestId);
+            List<LogModel> logs = customAppender.getLogsForUniqueIdentifier(requestId);
             String logMessages = objectMapper.writeValueAsString(logs);
 
             var requestParameters = request.getQueryString();
@@ -99,7 +98,7 @@ public class LogAggregationFilter extends OncePerRequestFilter {
             );
 
             LoggerUtil.addLogs(logMessages);
-            LoggerUtil.addResponseTime(responseTime);
+            LoggerUtil.addElapsedTime(responseTime);
 
             Level logLevel = logs.stream().map(LogModel::getLevel).max(Comparator.comparingInt(Level::toInt)).orElse(Level.INFO);
             LoggerUtil.sendEnrichedLogs(rootLogger, logLevel, enrichedLogs);

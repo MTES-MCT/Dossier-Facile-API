@@ -2,8 +2,8 @@ package fr.dossierfacile.process.file.amqp;
 
 import fr.dossierfacile.common.entity.messaging.QueueName;
 import fr.dossierfacile.common.service.interfaces.QueueMessageService;
+import fr.dossierfacile.process.file.log.LogAggregator;
 import fr.dossierfacile.process.file.service.AnalyzeDocumentService;
-import fr.dossierfacile.process.file.util.MemoryUtils;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +21,7 @@ public class AnalyzeDocumentReceiver {
     private final AnalyzeDocumentService analyzeDocumentService;
     private final QueueMessageService queueMessageService;
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+    private final LogAggregator logAggregator;
     @Value("${document.analysis.delay.ms}")
     private Long documentAnalysisDelay;
     @Value("${document.analysis.timeout.ms}")
@@ -37,9 +38,11 @@ public class AnalyzeDocumentReceiver {
                     documentAnalysisDelay,
                     documentAnalysisTimeout,
                     (message) -> {
-                        LoggingContext.startProcessing(message.getDocumentId(), ActionType.ANALYZE_DOCUMENT);
+                        log.info("Received {} to process : {}", ActionType.ANALYZE_DOCUMENT.name(), message.getFileId());
                         analyzeDocumentService.processDocument(message.getDocumentId());
-                        LoggingContext.endProcessing();
+                    }, (jobContext) -> {
+                        log.info("Ending processing");
+                        logAggregator.sendWorkerLogs(jobContext, ActionType.ANALYZE_DOCUMENT);
                     });
         } catch (Exception e) {
             log.error("Unable to consume the message queue");
