@@ -2,6 +2,7 @@ package fr.dossierfacile.common.service.interfaces;
 
 import fr.dossierfacile.common.entity.messaging.QueueMessage;
 import fr.dossierfacile.common.entity.messaging.QueueName;
+import fr.dossierfacile.common.model.JobContext;
 
 import java.util.function.Consumer;
 
@@ -16,5 +17,5 @@ public interface QueueMessageService {
      * @param consumptionTimeout       indicated the timeout before interruption
      * @param messageConsumer          processed function
      */
-    void consume(QueueName queueName, long consumptionDelayInMillis, long consumptionTimeout, Consumer<QueueMessage> messageConsumer);
+    void consume(QueueName queueName, long consumptionDelayInMillis, long consumptionTimeout, Consumer<QueueMessage> messageConsumer, Consumer<JobContext> onFinish);
 }

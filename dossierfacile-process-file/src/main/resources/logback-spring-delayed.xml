@@ -47,9 +47,15 @@
                     <levelValue>[ignore]</levelValue>
                 </fieldNames>
                 <customFields>{"application":"${APPLICATION_NAME}", "environment":"${ENVIRONMENT}", "profiles":"${APPLICATION_PROFILES}"}</customFields>
+                <includeMdcKeyName>execution_time</includeMdcKeyName>
+                <includeMdcKeyName>process_id</includeMdcKeyName>
+                <includeMdcKeyName>queue_name</includeMdcKeyName>
                 <includeMdcKeyName>file_id</includeMdcKeyName>
+                <includeMdcKeyName>document_id</includeMdcKeyName>
                 <includeMdcKeyName>action</includeMdcKeyName>
-                <includeMdcKeyName>execution_duration</includeMdcKeyName>
+                <includeMdcKeyName>execution_start</includeMdcKeyName>
+                <includeMdcKeyName>job_status</includeMdcKeyName>
+                <includeMdcKeyName>logs</includeMdcKeyName>
             </encoder>
         </appender>
     </springProfile>

@@ -1,24 +1,19 @@
 package fr.dossierfacile.common.config;
 
+import fr.dossierfacile.common.utils.LoggerUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.MDC;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.UUID;
 
 @Slf4j
 public abstract class AbstractConnectionContextFilter extends HttpFilter {
 
-    private static final String URI = "uri";
-    private static final String REQUEST_ID = "request_id";
-    private static final String RESPONSE_STATUS = "response_status";
-    private static final String REAL_IP = "ip";
     private static final String JAKARTA_SERVLET_FORWARD_REQUEST_URI = "jakarta.servlet.forward.request_uri";
     private static final String JAKARTA_SERVLET_ERROR_MESSAGE = "jakarta.servlet.error.message";
     private static final String JAKARTA_SERVLET_ERROR_EXCEPTION = "jakarta.servlet.error.exception";
@@ -31,12 +26,7 @@ public abstract class AbstractConnectionContextFilter extends HttpFilter {
         }
 
         try {
-            MDC.put(URI, request.getRequestURI());
-            MDC.put(REQUEST_ID, UUID.randomUUID().toString());
-            MDC.put(REAL_IP, request.getHeader("X-Real-Ip")); // specific to Scalingo infra
-
-            getAdditionalContextElements().forEach(MDC::put);
-
+            LoggerUtil.prepareMDCForHttpRequest(request, getAdditionalContextElements());
             String requestUri = request.getRequestURI();
             if ("/error".equals(requestUri) && request.getAttribute(JAKARTA_SERVLET_FORWARD_REQUEST_URI) != null) {
                 String previousRequestUri = request.getAttribute(JAKARTA_SERVLET_FORWARD_REQUEST_URI).toString();
@@ -56,7 +46,7 @@ public abstract class AbstractConnectionContextFilter extends HttpFilter {
             chain.doFilter(request, response);
         } finally {
             if (response.getStatus() != 200) {
-                MDC.put(RESPONSE_STATUS, String.valueOf(response.getStatus()));
+                LoggerUtil.addRequestStatusToMdc(response.getStatus());
                 if ("/error".equals(request.getRequestURI()) && request.getAttribute(JAKARTA_SERVLET_FORWARD_REQUEST_URI) != null) {
                     String previousRequestUri = request.getAttribute(JAKARTA_SERVLET_FORWARD_REQUEST_URI).toString();
                     log.info("Response: status={}, method={}, path={}, previousRequestUri={}", response.getStatus(), request.getMethod(), request.getRequestURI(), previousRequestUri);
@@ -68,7 +58,7 @@ public abstract class AbstractConnectionContextFilter extends HttpFilter {
                     log.error("Response: status={}, method={}, path={}", response.getStatus(), request.getMethod(), request.getRequestURI());
                 }
             }
-            MDC.clear();
+            LoggerUtil.clearMDC();
         }
     }
 

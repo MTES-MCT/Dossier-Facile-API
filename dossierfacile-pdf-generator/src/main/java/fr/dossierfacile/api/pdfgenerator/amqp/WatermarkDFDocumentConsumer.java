@@ -44,7 +44,7 @@ public class WatermarkDFDocumentConsumer {
                         long executionTimestamp = System.currentTimeMillis();
                         StorageFile watermarkFile = pdfGeneratorService.generateBOPdfDocument(documentService.getDocument(msg.getDocumentId()));
                         documentService.saveWatermarkFileAt(executionTimestamp, watermarkFile, msg.getDocumentId());
-                    });
+                    }, null);
         } catch (Exception e) {
             log.error("Unable to consume the message queue");
         }

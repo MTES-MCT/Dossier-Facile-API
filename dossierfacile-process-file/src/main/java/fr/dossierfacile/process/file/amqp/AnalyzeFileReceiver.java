@@ -2,6 +2,7 @@ package fr.dossierfacile.process.file.amqp;
 
 import fr.dossierfacile.common.entity.messaging.QueueName;
 import fr.dossierfacile.common.service.interfaces.QueueMessageService;
+import fr.dossierfacile.process.file.log.LogAggregator;
 import fr.dossierfacile.process.file.service.AnalyzeFileService;
 import fr.dossierfacile.process.file.util.MemoryUtils;
 import jakarta.annotation.PostConstruct;
@@ -21,6 +22,7 @@ public class AnalyzeFileReceiver {
     private final QueueMessageService queueMessageService;
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
     private final AnalyzeFileService analyzeFileService;
+    private final LogAggregator logAggregator;
     @Value("${file.analysis.timeout.ms}")
     private Long fileAnalysisTimeout;
 
@@ -35,9 +37,11 @@ public class AnalyzeFileReceiver {
                     0,
                     fileAnalysisTimeout,
                     (message) -> {
-                        LoggingContext.startProcessing(message.getFileId(), ActionType.ANALYZE);
+                        log.info("Received {} to process : {}", ActionType.ANALYZE.name(), message.getFileId());
                         analyzeFileService.processFile(message.getFileId());
-                        LoggingContext.endProcessing();
+                    }, (jobContext) -> {
+                        log.info("Ending processing");
+                        logAggregator.sendWorkerLogs(jobContext, ActionType.ANALYZE);
                     });
         } catch (Exception e) {
             log.error("Unable to consume the message queue");
