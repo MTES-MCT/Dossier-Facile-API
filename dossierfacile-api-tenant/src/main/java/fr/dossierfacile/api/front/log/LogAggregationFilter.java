@@ -98,9 +98,9 @@ public class LogAggregationFilter extends OncePerRequestFilter {
             );
 
             LoggerUtil.addLogs(logMessages);
-            LoggerUtil.addElapsedTime(responseTime);
+            LoggerUtil.addExecutionTime(responseTime);
 
-            Level logLevel = logs.stream().map(LogModel::getLevel).max(Comparator.comparingInt(Level::toInt)).orElse(Level.INFO);
+            Level logLevel = LoggerUtil.getLogLevel(logs);
             LoggerUtil.sendEnrichedLogs(rootLogger, logLevel, enrichedLogs);
 
             customAppender.clearLogsForRequest(requestId);
