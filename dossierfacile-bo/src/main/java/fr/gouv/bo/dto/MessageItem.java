@@ -3,6 +3,7 @@ package fr.gouv.bo.dto;
 import fr.dossierfacile.common.entity.DocumentAnalysisReport;
 import fr.dossierfacile.common.entity.DocumentDeniedReasons;
 import fr.dossierfacile.common.enums.DocumentCategory;
+import fr.dossierfacile.common.enums.DocumentCategoryStep;
 import fr.dossierfacile.common.enums.DocumentSubCategory;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,6 +24,7 @@ public class MessageItem {
     private String customTex;
     private DocumentCategory documentCategory;
     private DocumentSubCategory documentSubCategory;
+    private DocumentCategoryStep documentCategoryStep;
     @Builder.Default
     private List<ItemDetail> itemDetailList = new ArrayList<>();
     private Long documentId;

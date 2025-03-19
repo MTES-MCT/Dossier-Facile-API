@@ -6,19 +6,27 @@ import fr.dossierfacile.api.front.register.enums.StepRegister;
 import fr.dossierfacile.api.front.register.form.partner.AccountPartnerForm;
 import fr.dossierfacile.api.front.register.form.tenant.*;
 import fr.dossierfacile.api.front.security.interfaces.ClientAuthenticationFacade;
+import fr.dossierfacile.api.front.service.interfaces.FinancialDocumentService;
 import fr.dossierfacile.api.front.service.interfaces.TenantService;
+import fr.dossierfacile.api.front.validator.FinancialDocumentCategoriesValidator;
 import fr.dossierfacile.api.front.validator.group.ApiPartner;
+import fr.dossierfacile.api.front.validator.group.FinancialDocumentGroup;
 import fr.dossierfacile.common.config.ApiVersion;
 import fr.dossierfacile.common.entity.UserApi;
+import fr.dossierfacile.common.enums.DocumentCategoryStep;
 import fr.dossierfacile.common.enums.LogType;
 import fr.dossierfacile.common.mapper.CategoriesMapper;
 import fr.dossierfacile.common.service.interfaces.LogService;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+import jakarta.validation.ConstraintValidatorContext;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.validator.internal.engine.constraintvalidation.ConstraintValidatorContextImpl;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -43,6 +51,7 @@ public class ApiPartnerRegisterController {
     private final TenantService tenantService;
     private final LogService logService;
     private final CategoriesMapper categoriesMapper;
+    private final FinancialDocumentService financialDocumentService;
 
     private void validate(Object object, Class<?>... groups) {
         Set<ConstraintViolation<Object>> violations = validator.validate(object, groups);
@@ -123,7 +132,14 @@ public class ApiPartnerRegisterController {
 
     @PreAuthorize("hasPermissionOnTenant(#documentFinancialForm.tenantId)")
     @PostMapping(value = "/documentFinancial", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ApiOperation(value = "Register a financial document", notes = "Save a financial document for a tenant, a categoryStep can be added but is not mandatory")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Document has been saved", response = TenantModel.class),
+            @ApiResponse(code = 403, message = "Forbidden: User not verified"),
+            @ApiResponse(code = 400, message = "Wrong request params")
+    })
     public ResponseEntity<TenantModel> documentFinancial(@Validated(ApiPartner.class) DocumentFinancialForm documentFinancialForm) {
+        financialDocumentService.setFinancialDocumentCategoryStep(documentFinancialForm);
         var tenant = tenantService.findById(documentFinancialForm.getTenantId());
         var tenantModel = tenantService.saveStepRegister(tenant, documentFinancialForm, StepRegister.DOCUMENT_FINANCIAL);
         return ok(tenantModel);

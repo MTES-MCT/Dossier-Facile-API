@@ -40,6 +40,7 @@ public class DocumentFinancial extends AbstractDocumentSaveStep<DocumentFinancia
         Document document = documentRepository.findByDocumentCategoryAndTenantAndId(DocumentCategory.FINANCIAL, tenant, documentFinancialForm.getId())
                 .orElse(Document.builder()
                         .documentCategory(DocumentCategory.FINANCIAL)
+                        .documentCategoryStep(documentFinancialForm.getCategoryStep())
                         .tenant(tenant)
                         .build());
         document.setDocumentStatus(DocumentStatus.TO_PROCESS);

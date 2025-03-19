@@ -95,6 +95,7 @@
                                     <div class="card-header file1-border-color file1-background-color bold">
                                         <div class="letter">
                                             <span th:text=" 'Type : ' + #{${messageItem.getDocumentSubCategory().getLabel()}}"></span>
+                                            <span th:if="${messageItem.getDocumentCategoryStep() != null}" th:text=" ' | ' + #{${messageItem.getDocumentCategoryStep().getLabel()}}"></span>
                                         </div>
                                         <div class="letter" style="padding-top: 7px"
                                              th:if="${messageItem.getMonthlySum()}!=null">

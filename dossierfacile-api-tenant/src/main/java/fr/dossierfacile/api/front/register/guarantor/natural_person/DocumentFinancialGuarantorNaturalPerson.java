@@ -48,6 +48,7 @@ public class DocumentFinancialGuarantorNaturalPerson extends AbstractDocumentSav
         Document document = documentRepository.findByDocumentCategoryAndGuarantorAndId(DocumentCategory.FINANCIAL, guarantor, documentFinancialGuarantorNaturalPersonForm.getDocumentId())
                 .orElse(Document.builder()
                         .documentCategory(DocumentCategory.FINANCIAL)
+                        .documentCategoryStep(documentFinancialGuarantorNaturalPersonForm.getCategoryStep())
                         .guarantor(guarantor)
                         .build());
         document.setDocumentStatus(DocumentStatus.TO_PROCESS);

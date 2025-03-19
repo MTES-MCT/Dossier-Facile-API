@@ -40,7 +40,11 @@ public class DocumentProfessionalGuarantorNaturalPerson extends AbstractDocument
         Guarantor guarantor = guarantorRepository.findByTenantAndTypeGuarantorAndId(tenant, TypeGuarantor.NATURAL_PERSON, documentProfessionalGuarantorNaturalPersonForm.getGuarantorId()).orElseThrow(() -> new GuarantorNotFoundException(documentProfessionalGuarantorNaturalPersonForm.getGuarantorId()));
 
         DocumentSubCategory documentSubCategory = documentProfessionalGuarantorNaturalPersonForm.getTypeDocumentProfessional();
-        Document document = documentRepository.findFirstByDocumentCategoryAndGuarantor(DocumentCategory.PROFESSIONAL, guarantor).orElse(Document.builder().documentCategory(DocumentCategory.PROFESSIONAL).guarantor(guarantor).build());
+        Document document = documentRepository.findFirstByDocumentCategoryAndGuarantor(DocumentCategory.PROFESSIONAL, guarantor)
+                .orElse(
+                    Document.builder().documentCategory(DocumentCategory.PROFESSIONAL).guarantor(guarantor).build()
+                );
+
         document.setDocumentStatus(DocumentStatus.TO_PROCESS);
         document.setDocumentDeniedReasons(null);
         document.setDocumentSubCategory(documentSubCategory);

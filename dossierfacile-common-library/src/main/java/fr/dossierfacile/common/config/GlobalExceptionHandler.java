@@ -1,5 +1,6 @@
 package fr.dossierfacile.common.config;
 
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -21,6 +22,12 @@ import java.util.List;
 @ConditionalOnProperty(name = "dossierfacile.common.global.exception.handler", havingValue = "true")
 @ControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ApiError> handleConstraintViolationException(ConstraintViolationException e) {
+        var errors = e.getConstraintViolations().stream().map(constraintViolation -> constraintViolation.getPropertyPath() + ": " + constraintViolation.getMessage()).toList();
+        return new ResponseEntity<>(new ApiError(errors), HttpStatus.BAD_REQUEST);
+    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiError> handleMethodArgumentNotValidException(MethodArgumentNotValidException e, WebRequest webRequest) {

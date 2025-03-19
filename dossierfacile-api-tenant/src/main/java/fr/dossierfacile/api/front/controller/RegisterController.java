@@ -7,9 +7,14 @@ import fr.dossierfacile.api.front.register.form.tenant.*;
 import fr.dossierfacile.api.front.security.interfaces.AuthenticationFacade;
 import fr.dossierfacile.api.front.service.interfaces.TenantService;
 import fr.dossierfacile.api.front.validator.group.Dossier;
+import fr.dossierfacile.api.front.validator.group.FinancialDocumentGroup;
+import fr.dossierfacile.api.front.validator.group.ResidencyDocumentGroup;
 import fr.dossierfacile.common.entity.Tenant;
 import fr.dossierfacile.common.enums.LogType;
 import fr.dossierfacile.common.service.interfaces.LogService;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import lombok.AllArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -72,7 +77,7 @@ public class RegisterController {
 
     @PreAuthorize("hasPermissionOnTenant(#documentResidencyForm.tenantId)")
     @PostMapping(value = "/documentResidency", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TenantModel> documentResidency(@Validated(Dossier.class) DocumentResidencyForm documentResidencyForm) {
+    public ResponseEntity<TenantModel> documentResidency(@Validated({Dossier.class, ResidencyDocumentGroup.class}) DocumentResidencyForm documentResidencyForm) {
         Tenant tenant = authenticationFacade.getTenant(documentResidencyForm.getTenantId());
         tenantService.saveStepRegister(tenant, documentResidencyForm, StepRegister.DOCUMENT_RESIDENCY);
         Tenant loggedTenant = (documentResidencyForm.getTenantId() == null) ? tenant : authenticationFacade.getLoggedTenant();
@@ -90,7 +95,13 @@ public class RegisterController {
 
     @PreAuthorize("hasPermissionOnTenant(#documentFinancialForm.tenantId)")
     @PostMapping(value = "/documentFinancial", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TenantModel> documentFinancial(@Validated(Dossier.class) DocumentFinancialForm documentFinancialForm) {
+    @ApiOperation(value = "Register a financial document", notes = "Save a financial document for a tenant")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Document has been saved", response = TenantModel.class),
+            @ApiResponse(code = 403, message = "Forbidden: User not verified"),
+            @ApiResponse(code = 400, message = "Wrong request params")
+    })
+    public ResponseEntity<TenantModel> documentFinancial(@Validated({Dossier.class, FinancialDocumentGroup.class}) DocumentFinancialForm documentFinancialForm) {
         Tenant tenant = authenticationFacade.getTenant(documentFinancialForm.getTenantId());
         tenantService.saveStepRegister(tenant, documentFinancialForm, StepRegister.DOCUMENT_FINANCIAL);
         Tenant loggedTenant = (documentFinancialForm.getTenantId() == null) ? tenant : authenticationFacade.getLoggedTenant();

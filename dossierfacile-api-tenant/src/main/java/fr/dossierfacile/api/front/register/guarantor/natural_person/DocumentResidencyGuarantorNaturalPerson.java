@@ -48,6 +48,7 @@ public class DocumentResidencyGuarantorNaturalPerson
         document.setDocumentStatus(DocumentStatus.TO_PROCESS);
         document.setDocumentDeniedReasons(null);
         document.setDocumentSubCategory(documentSubCategory);
+        document.setDocumentCategoryStep(documentResidencyGuarantorNaturalPersonForm.getCategoryStep());
 
         if (documentSubCategory == DocumentSubCategory.OTHER_RESIDENCY) {
             document.setCustomText(documentResidencyGuarantorNaturalPersonForm.getCustomText());

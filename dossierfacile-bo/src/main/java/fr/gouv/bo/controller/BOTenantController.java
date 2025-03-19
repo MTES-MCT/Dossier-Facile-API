@@ -246,6 +246,7 @@ public class BOTenantController {
                         .avisDetected(document.getAvisDetected())
                         .documentCategory(document.getDocumentCategory())
                         .documentSubCategory(document.getDocumentSubCategory())
+                        .documentCategoryStep(document.getDocumentCategoryStep())
                         .itemDetailList(getItemDetailForSubcategoryOfDocument(document.getDocumentSubCategory(), TENANT))
                         .documentId(document.getId())
                         .documentName(document.getName())

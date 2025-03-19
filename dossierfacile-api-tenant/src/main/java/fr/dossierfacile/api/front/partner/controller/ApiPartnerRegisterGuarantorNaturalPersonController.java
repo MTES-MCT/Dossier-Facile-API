@@ -4,6 +4,7 @@ import fr.dossierfacile.api.front.model.tenant.TenantModel;
 import fr.dossierfacile.api.front.register.enums.StepRegister;
 import fr.dossierfacile.api.front.register.form.guarantor.natural_person.*;
 import fr.dossierfacile.api.front.security.interfaces.ClientAuthenticationFacade;
+import fr.dossierfacile.api.front.service.interfaces.FinancialDocumentService;
 import fr.dossierfacile.api.front.service.interfaces.TenantService;
 import fr.dossierfacile.api.front.validator.group.ApiPartner;
 import fr.dossierfacile.common.config.ApiVersion;
@@ -34,6 +35,7 @@ public class ApiPartnerRegisterGuarantorNaturalPersonController {
     private final ClientAuthenticationFacade clientAuthenticationFacade;
     private final Validator validator;
     private final CategoriesMapper categoriesMapper;
+    private final FinancialDocumentService financialDocumentService;
 
     private void validate(Object object, Class<?>... groups) {
         Set<ConstraintViolation<Object>> violations = validator.validate(object, groups);
@@ -94,6 +96,7 @@ public class ApiPartnerRegisterGuarantorNaturalPersonController {
     @PreAuthorize("hasPermissionOnTenant(#documentFinancialGuarantorNaturalPersonForm.tenantId)")
     @PostMapping("/documentFinancial")
     public ResponseEntity<TenantModel> documentFinancial(@Validated(ApiPartner.class) DocumentFinancialGuarantorNaturalPersonForm documentFinancialGuarantorNaturalPersonForm) {
+        financialDocumentService.setFinancialDocumentCategoryStep(documentFinancialGuarantorNaturalPersonForm);
         var tenant = tenantService.findById(documentFinancialGuarantorNaturalPersonForm.getTenantId());
         var tenantModel = tenantService.saveStepRegister(tenant, documentFinancialGuarantorNaturalPersonForm, StepRegister.DOCUMENT_FINANCIAL_GUARANTOR_NATURAL_PERSON);
         return ok(tenantModel);
