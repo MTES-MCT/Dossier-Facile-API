@@ -1,17 +1,7 @@
 package fr.dossierfacile.common.entity;
 
 import fr.dossierfacile.common.enums.MessageStatus;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -68,6 +58,9 @@ public class Message implements Serializable {
     @OneToMany(mappedBy = "message", fetch = FetchType.LAZY)
     @ToString.Exclude
     private List<DocumentDeniedReasons> documentDeniedReasons = new ArrayList<>();
+
+    @Transient
+    private String emailHtml;
 
     @Override
     public boolean equals(Object o) {
