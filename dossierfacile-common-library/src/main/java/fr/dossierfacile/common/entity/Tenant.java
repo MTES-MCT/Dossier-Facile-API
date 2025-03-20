@@ -63,6 +63,10 @@ public class Tenant extends User implements Person, Serializable {
     @JoinColumn(name = "apartment_sharing_id")
     private ApartmentSharing apartmentSharing;
 
+    private String tenantFirstName;
+    private String tenantLastName;
+    private String tenantPreferredName;
+
     @Column
     private Integer satisfactionSurvey;
 
@@ -247,6 +251,39 @@ public class Tenant extends User implements Person, Serializable {
      */
     public boolean isBelongToPartner() {
         return this.getKeycloakId() == null && this.getTenantsUserApi().size() == 1;
+    }
+
+    @Override
+    public String getFirstName() {
+        return tenantFirstName != null ? tenantFirstName : super.getFirstName();
+    }
+
+    @Override
+    public String getLastName() {
+        return tenantLastName != null ? tenantLastName : super.getLastName();
+    }
+
+    @Override
+    public String getPreferredName() {
+        return tenantPreferredName != null ? tenantPreferredName : super.getPreferredName();
+    }
+
+    @Override
+    public void setFirstName(String firstName) {
+        super.setFirstName(firstName);
+        this.tenantFirstName = firstName;
+    }
+
+    @Override
+    public void setLastName(String lastName) {
+        super.setLastName(lastName);
+        this.tenantLastName = lastName;
+    }
+
+    @Override
+    public void setPreferredName(String preferredName) {
+        super.setPreferredName(preferredName);
+        this.tenantPreferredName = preferredName;
     }
 
 }

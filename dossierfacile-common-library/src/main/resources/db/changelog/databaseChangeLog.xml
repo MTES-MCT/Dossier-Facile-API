@@ -162,5 +162,6 @@
     <include file="db/migration/202412030000-drop-column-password.xml"/>
     <include file="db/migration/202412050000-drop-column-all-internal-id.xml"/>
     <include file="db/migration/202501290000-add-column-document_category_step.xml"/>
+    <include file="db/migration/20250320170000-add-identity-information-on-tenant.xml"/>
 
 </databaseChangeLog>

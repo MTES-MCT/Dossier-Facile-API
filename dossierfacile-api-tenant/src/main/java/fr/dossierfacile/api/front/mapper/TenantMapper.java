@@ -43,6 +43,9 @@ public abstract class TenantMapper {
         this.categoriesMapper = categoriesMapper;
     }
 
+    @Mapping(target="firstName", source="tenant.tenantFirstName")
+    @Mapping(target="lastName", source="tenant.tenantLastName")
+    @Mapping(target="preferredName", source="tenant.tenantPreferredName")
     public abstract TenantModel toTenantModel(Tenant tenant, @Context UserApi userApi);
 
     @Mapping(target = "name", expression = "java((document.getWatermarkFile() != null )? applicationBaseUrl + \"/" + PATH + "/\" + document.getName() : null)")

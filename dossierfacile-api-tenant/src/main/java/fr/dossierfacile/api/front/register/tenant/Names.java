@@ -50,7 +50,11 @@ public class Names implements SaveStep<NamesForm> {
             }
             documentService.resetValidatedOrInProgressDocumentsAccordingCategories(documentsToCheck, Arrays.asList(DocumentCategory.values()));
         }
-        if (!tenant.getFranceConnect()) {
+        // If user is france connected, we only update the tenantFirstName and tenantLastName not user_account firstname and lastname
+        if (tenant.getFranceConnect()) {
+            tenant.setTenantFirstName(namesForm.getFirstName());
+            tenant.setTenantLastName(namesForm.getLastName());
+        } else {
             tenant.setFirstName(namesForm.getFirstName());
             tenant.setLastName(namesForm.getLastName());
         }

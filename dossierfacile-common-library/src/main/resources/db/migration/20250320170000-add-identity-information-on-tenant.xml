@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.10.xsd">
+    <changeSet id="202503201700" author="Nicolas">
+        <!-- Ajout des colonnes dans la table tenant -->
+        <addColumn tableName="tenant">
+            <column name="tenant_first_name" type="varchar(255)"/>
+            <column name="tenant_last_name" type="varchar(255)"/>
+            <column name="tenant_preferred_name" type="varchar(255)"/>
+        </addColumn>
+
+        <!-- Mise à jour des nouvelles colonnes avec les données de user_account -->
+        <update tableName="tenant">
+            <column name="tenant_first_name" valueComputed="(SELECT first_name FROM user_account WHERE user_account.id = tenant.id)"/>
+            <column name="tenant_last_name" valueComputed="(SELECT last_name FROM user_account WHERE user_account.id = tenant.id)"/>
+            <column name="tenant_preferred_name" valueComputed="(SELECT preferred_name FROM user_account WHERE user_account.id = tenant.id)"/>
+        </update>
+
+    </changeSet>
+</databaseChangeLog>
