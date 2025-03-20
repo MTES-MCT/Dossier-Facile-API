@@ -8,6 +8,7 @@ import com.google.common.base.Strings;
 import fr.dossierfacile.common.dto.mail.TenantDto;
 import fr.dossierfacile.common.dto.mail.UserApiDto;
 import fr.dossierfacile.common.dto.mail.UserDto;
+import fr.dossierfacile.common.entity.Message;
 import fr.dossierfacile.common.entity.UserApi;
 import fr.dossierfacile.common.utils.OptionalString;
 import lombok.RequiredArgsConstructor;
@@ -87,11 +88,12 @@ public class MailService {
     }
 
     @Async
-    public void sendMailNotificationAfterDeny(TenantDto tenant) {
+    public void sendMailNotificationAfterDeny(TenantDto tenant, Message message) {
         Map<String, String> params = new HashMap<>();
         params.put("PRENOM", tenant.getFirstName());
         params.put("NOM", OptionalString.of(tenant.getPreferredName()).orElse(tenant.getLastName()));
         params.put(TENANT_BASE_URL_KEY, tenantBaseUrl);
+        params.put("HTML", OptionalString.of(message.getEmailHtml()).orElse(""));
 
         if (tenant.isBelongToPartner()) {
             UserApiDto userApi = tenant.getUserApis().getFirst();

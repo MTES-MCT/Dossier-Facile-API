@@ -329,6 +329,27 @@ public class TenantService {
         }
     }
 
+    private void appendCategoriesNamesForEmail(StringBuilder html, List<MessageItem> messageItems) {
+        for (MessageItem messageItem : messageItems) {
+            if (isDenied(messageItem)) {
+                html.append("<li>");
+                html.append(documentCategoryLabel(messageItem));
+                html.append("</li>");
+            }
+        }
+    }
+
+    private void addHtmlSectionForEmail(StringBuilder builder, String name, List<MessageItem> messageItems) {
+        builder.append("<div style=\"background-color:#f6f6f6;border-radius:4px;padding-top:10px;padding-left:10px;padding-right:10px;margin-bottom:10px;\">");
+        builder.append("<strong>");
+        builder.append(name);
+        builder.append("</strong>");
+        builder.append("<ul style=\"padding-bottom:10px;padding-top:10px;text-decoration:underline;line-height:30px\">");
+        appendCategoriesNamesForEmail(builder, messageItems);
+        builder.append("</ul>");
+        builder.append("</div>");
+    }
+
     private String guarantorLabel(GuarantorItem guarantorItem) {
         Long guarantorId = guarantorItem.getGuarantorId();
         Guarantor guarantor = guarantorRepository.findById(guarantorId).orElseThrow(() -> new GuarantorNotFoundException(guarantorId));
@@ -344,6 +365,8 @@ public class TenantService {
 
         List<MessageItem> messageItems = customMessage.getMessageItems();
         StringBuilder html = new StringBuilder();
+        StringBuilder emailHtml = new StringBuilder();
+
         html.append("<ul class=\"custom-message\"><li><p>");
         html.append(messageSource.getMessage("bo.tenant.custom.email.head", null, locale));
         html.append("</p>");
@@ -357,7 +380,9 @@ public class TenantService {
             html.append("</ul>");
         }
 
-        for (GuarantorItem guarantorItem : customMessage.getGuarantorItems()) {
+        List<GuarantorItem> guarantorItems = customMessage.getGuarantorItems();
+
+        for (GuarantorItem guarantorItem : guarantorItems) {
             if (hasCheckedItem(guarantorItem.getMessageItems())) {
                 html.append("<strong class=\"name\">");
                 html.append(guarantorLabel(guarantorItem));
@@ -381,9 +406,30 @@ public class TenantService {
         html.append("<li>");
         html.append(messageSource.getMessage("bo.tenant.custom.email.footer1", null, locale));
         html.append("</li></ul>");
-        Message message = messageService.create(new MessageDTO(html.toString()), tenant, false, true);
+
+        prepareEmailHtml(emailHtml, forTenant, tenant, messageItems, guarantorItems);
+
+        Message message = messageService.create(new MessageDTO(html.toString(), emailHtml.toString()), tenant, false, true);
         updateDocumentDeniedReasons(customMessage, message);
         return message;
+    }
+
+    private void prepareEmailHtml(
+            StringBuilder builder,
+            boolean forTenant,
+            Tenant tenant,
+            List<MessageItem> messageItems,
+            List<GuarantorItem> guarantorItems
+    ) {
+        if (forTenant) {
+            addHtmlSectionForEmail(builder, tenant.getFirstName(), messageItems);
+        }
+
+        for (GuarantorItem guarantorItem : guarantorItems) {
+            if (hasCheckedItem(guarantorItem.getMessageItems())) {
+                addHtmlSectionForEmail(builder, guarantorLabel(guarantorItem), guarantorItem.getMessageItems());
+            }
+        }
     }
 
     @Transactional
@@ -576,7 +622,7 @@ public class TenantService {
                         .filter(t -> isNotBlank(t.getEmail()))
                         .forEach(t -> mailService.sendEmailToTenantAfterTenantDenied(t, tenantDto));
             } else {
-                mailService.sendMailNotificationAfterDeny(tenantDto);
+                mailService.sendMailNotificationAfterDeny(tenantDto, message);
             }
 
         });

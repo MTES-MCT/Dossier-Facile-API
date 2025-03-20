@@ -24,6 +24,7 @@ public class MessageService {
     public Message create(MessageDTO messageDTO, Tenant tenant, boolean isUser, boolean isCustomsMessage) {
         Message message = Message.builder()
                 .messageBody(messageDTO.getMessage())
+                .emailHtml(messageDTO.getEmailHtml())
                 .customMessage(isCustomsMessage)
                 .messageStatus(MessageStatus.UNREAD)
                 .creationDateTime(LocalDateTime.now())

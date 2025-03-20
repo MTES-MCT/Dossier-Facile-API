@@ -19,4 +19,10 @@ public class MessageDTO {
 
     private String message;
 
+    private String emailHtml;
+
+    public String getEmailHtml() {
+        return emailHtml;
+    }
+
 }
